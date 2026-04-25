@@ -39,7 +39,7 @@ Our system relies on a seamless interaction between three core layers:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-org/decentralized-warranty.git
+git clone https://github.com/Prasetyant0/monad-digital-warranty-backend.git
 cd decentralized-warranty
 ```
 
