@@ -1,99 +1,75 @@
-# 🏆 Decentralized Digital Warranty System (Monad Blitz)
+# Decentralized Digital Warranty System
 
-> **Elevator Pitch:** A fast, secure, and scalable NFT-based digital warranty solution designed for businesses of all sizes (retailers, e-commerce, and enterprises). It eliminates counterfeit receipts, prevents physical paper loss, and ensures verifiable ownership, fully powered by Monad's extreme high throughput and low-latency execution.
+## Abstract
 
----
-
-## 🌍 Deployed Contract Details
-
-The smart contracts are fully deployed and verified on the Monad test network.
-
-- **Network:** Monad Testnet (Chain ID: `10143`)
-- **RPC URL:** `https://testnet-rpc.monad.xyz`
-- **Contract Address:** [`0xEd937600da7A74b71154f1F070A1953A64B37fa6`](https://testnet.monadexplorer.com/address/0xEd937600da7A74b71154f1F070A1953A64B37fa6)
-- **Deployer (Default Admin):** `0x33c346Ee8F1418c56Efed81d2277Fa2426401cdb`
+The **Decentralized Digital Warranty System** replaces traditional, easily lost, and counterfeit-prone paper warranties with secure, non-fungible tokens (NFTs). Deployed on the highly scalable and blazing-fast Monad blockchain, this platform enables retailers and enterprises to seamlessly issue, track, and verify product warranties. By bringing verifiable ownership on-chain, businesses can provide their customers with peace of mind through a transparent, immutable digital guarantee.
 
 ---
 
-## ✨ Core Features
+## ✨ Key Features
 
-1. 🔐 **Enterprise Access Control:** Leveraging OpenZeppelin's `AccessControl` for enterprise-grade security. Features strict separation of operations with `ADMIN_ROLE` (for catalog managers) and `MINTER_ROLE` (for automated systems/cashiers).
-2. 📋 **Product Registry (Whitelisting):** An on-chain cataloging registry mapping to ensure absolute data consistency across thousands of product lines. Warranties cannot be issued for unregistered product types.
-3. 🔢 **Auto-Generated Serial Numbers:** Secure, on-chain unique human-readable Serial Numbers (SN) generated using advanced `keccak256` hashing logic to prevent counterfeiting (e.g., `PROD-A1B2C3D4-2026`).
-4. ⚡ **High-Volume Batch Minting:** A highly gas-efficient `unchecked` indexed loop designed to mint massive amounts of warranties at once (CSV upload ready), aggressively exploiting Monad's parallel execution and extreme scale throughput.
+- 🔐 **Transparent Ownership:** Warranty NFTs reside in the purchaser's wallet, ensuring clear, indisputable ownership that cannot be lost like paper receipts.
+- 🛡️ **Anti-Counterfeit Logic:** Warranties generate unique, human-readable Serial Numbers via on-chain `keccak256` hashing routines. A product whitelist system ensures that warranties can only be issued for authorized items.
+- ⚡ **Batch Processing for Enterprises:** Engineered to accommodate large-scale retail operations, our contracts leverage gas-optimized indexed loops for CSV-based batch minting, perfectly complementing Monad's parallel execution layer.
+- 🏢 **Enterprise-Grade Access Control:** Strictly enforced roles (`ADMIN_ROLE`, `MINTER_ROLE`) allow businesses to delegate operational functions to retail staff or automated systems securely.
+
+---
+
+## 🏗 Architecture Overview
+
+Our system relies on a seamless interaction between three core layers:
+
+1. **Smart Contract (Solidity):** The backbone of our warranty logic. Handles the ERC721-based warranty minting, role-based access, serial number generation, and product registries.
+2. **Monad Network:** Serving as the execution layer, Monad provides extreme throughput and sub-second finality. It naturally accommodates high-volume transactional flows, such as point-of-sale systems batching hundreds of warranties.
+3. **User Interface (Frontend):** Facilitates user interactions—whether it's an administrator registering a new product line or a user checking their warranty expiration date—connected to the blockchain via asynchronous RPC calls.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Smart Contracts:** Solidity `^0.8.24`
-- **Framework:** Hardhat (v2.22.15) tuned with EVM Target: `cancun`
-- **Libraries:** OpenZeppelin Contracts v5 (`ERC721URIStorage`, `AccessControl`, `Strings`), Ethers.js
-- **Network Target:** Monad Testnet
+- **Blockchain Engine:** Solidity (`^0.8.24`)
+- **Development Environment:** Hardhat (with TypeScript)
+- **Smart Contract Libraries:** OpenZeppelin v5 (AccessControl, ERC721)
+- **Web3 Interaction:** Ethers.js
+- **Execution Network Target:** Monad
 
 ---
 
-## 🚀 Local Setup & Deployment
+## 🚀 Installation & Setup Guide
 
-A brief guide for judges and reviewers to test the environment locally.
-
-### 1. Clone & Install Dependencies
+### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-org/garansi-digital-monad.git
-cd garansi-digital-monad
+git clone https://github.com/your-org/decentralized-warranty.git
+cd decentralized-warranty
+```
 
-# Install Hardhat and plugins
+### 2. Install Dependencies
+```bash
 npm install
 ```
 
-### 2. Environment Configuration
-Create a `.env` file at the root of the repository:
+### 3. Environment Variables
+Create a `.env` file in the root directory to store your deployment credentials.
+*(Note: Never commit your `.env` file to a public repository!)*
+
 ```env
-PRIVATE_KEY="your_wallet_private_key_here"
+PRIVATE_KEY="<YOUR_DEPLOYER_WALLET_PRIVATE_KEY>"
+RPC_URL="<MONAD_RPC_URL>"
 ```
 
-### 3. Compile Contracts
-Compile the contracts to generate the TypeChain bindings and artifacts.
+### 4. Compile the Smart Contracts
 ```bash
 npx hardhat compile
 ```
 
-### 4. Deploy to Monad Testnet
-Deploy the contract using the provided Hardhat script. The deployer wallet will automatically be granted the `DEFAULT_ADMIN_ROLE`.
+### 5. Deploy Locally or to Testnet
 ```bash
-npx hardhat run scripts/deploy.ts --network monad-testnet
+# To run on a specified network
+npx hardhat run scripts/deploy.ts --network <network-name>
 ```
 
 ---
 
-## 💻 Frontend Integration Guide
+## 📜 License
 
-When integrating the frontend, connect to the deployed contract using its ABI and the address above. Here are the primary interaction points:
-
-### 1. Register a Product Type
-*Requires `ADMIN_ROLE`.* Must be called before issuing warranties for a specific product ID.
-```solidity
-function registerProductType(uint256 productId, string calldata productName) external;
-```
-
-### 2. Issue a Single Warranty
-*Requires `MINTER_ROLE`.* Mints an NFT warranty to the customer.
-```solidity
-function issueWarranty(
-    address customer,
-    uint256 productId,
-    uint256 durationInDays,
-    string calldata metadataURI
-) public returns (uint256 tokenId);
-```
-
-### 3. Batch Issue Warranties
-*Requires `MINTER_ROLE`.* Optimized for uploading a CSV of buyers and bulk-issuing their digital warranties in a single, high-throughput transaction.
-```solidity
-function batchIssueWarranty(
-    address[] calldata customers,
-    uint256 productId,
-    uint256 durationInDays,
-    string[] calldata metadataURIs
-) external;
-```
+This project is licensed under the MIT License - see the `LICENSE` file for details.
